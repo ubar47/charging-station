@@ -61,7 +61,6 @@ class Player:
         self.p_station = 0
 
 
-
     def take_decision(self, time):
 
         #Exemple : simple politics
@@ -88,27 +87,21 @@ class Player:
 
         # load_battery must be in the following format : {"fast" : [load_car_fast_1,load_car_fast_2],"slow" : [load_car_slow_1,load_car_slow_2]}
         
-        if time < 1*2:
-            load_battery = {"fast" : (self.pmax_station/4)*np.ones(2),"slow" : self.pmax_slow*np.ones(2)}
-        
-        if time >= 1*2 and time <= 3*2+1:
-            if self.imbalance["purchase_cover"][time-1] > 0.8 : 
-                load_battery = {"fast" : (self.pmax_station/4)*np.ones(2),"slow" : self.pmax_slow*np.ones(2)}
-            else:
-                load_battery = {"fast" : 0*np.ones(2),"slow" : self.pmax_slow*np.ones(2)}
+        if time < 5*2+1:
+            load_battery = {"fast" : (self.pmax_station/3)*np.ones(2),"slow" : self.pmax_slow*np.ones(2)}
+                
+        if time > 6*2 and time <=  8*2:
+            load_battery = {"fast" : (-self.pmax_station/3)*np.ones(2),"slow" : -self.pmax_slow*np.ones(2)}
+            
+            
+            
         
         
         if time >= 14*2:
-            if self.imbalance["sale_cover"][time-1] == 1 :
-                if self.imbalance["purchase_cover"][time-1] < 0.5:
-                    load_battery = {"fast" : -self.pmax_fast*np.ones(2),"slow" : -self.pmax_slow*np.ones(2)}
-                else:
-                    load_battery = {"fast" : -self.pmax_fast/3*np.ones(2),"slow" : -self.pmax_slow/2*np.ones(2)}
-            else:
-                load_battery = {"fast" : 0*np.ones(2),"slow" : 0*np.ones(2)}
+            if self.prices["sale"][time-1] >= self.prices["purchase"][0]:
+                load_battery = {"fast" : -self.pmax_fast*np.ones(2),"slow" : -self.pmax_slow*np.ones(2)}
                 
-            
-        
+                
         return load_battery
 
 
