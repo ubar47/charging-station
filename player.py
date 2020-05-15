@@ -65,8 +65,6 @@ class Player:
 
         #Exemple : simple politics
 
-        load_battery = {"fast" : np.zeros(2),"slow" : np.zeros(2)}
-
         #if time<6*2:
 
         #    load_battery = {"fast" : 17*np.ones(2),"slow" : 3*np.ones(2)}
@@ -87,18 +85,30 @@ class Player:
 
         # load_battery must be in the following format : {"fast" : [load_car_fast_1,load_car_fast_2],"slow" : [load_car_slow_1,load_car_slow_2]}
         
+        load_battery = {"fast" : np.zeros(2),"slow" : np.zeros(2)}
+        A=np.diag([self.pmax_station/3-self.battery_stock["fast"][0][0]/10,self.pmax_station/3-self.battery_stock["fast"][0][1]/10])
+        B=np.diag([self.pmax_slow-self.battery_stock["slow"][0][0]/10,self.pmax_slow-self.battery_stock["slow"][0][1]/10])
         if time < 5*2+1:
-            load_battery = {"fast" : (self.pmax_station/3)*np.ones(2),"slow" : self.pmax_slow*np.ones(2)}
-                
+            load_battery = {"fast" : np.dot(A,np.ones(2)),"slow" : np.dot(B,np.ones(2))}
+
+        C=np.eye(2) #Matrice diagonale qui prendra 0 si les voitures fast ont une batterie trop juste pour vendre, 1 sinon.
+        D=np.eye(2) #Idem pour les slow
         if time > 6*2 and time <=  8*2:
-            load_battery = {"fast" : (-self.pmax_station/3)*np.ones(2),"slow" : -self.pmax_slow*np.ones(2)}
+            if self.battery_stock["fast"][0][0]<11:
+                C[0][0]=0
+            if self.battery_stock["fast"][0][1]<11:
+                C[0][1]=0
+            if self.battery_stock["slow"][0][0]<11:
+                D[0][0]=0
+            if self.battery_stock["slow"][0][1]<11:
+                D[0][1]=0
+            load_battery = {"fast" : (-self.pmax_station/3)*np.dot(C,np.ones(2)),"slow" : -self.pmax_slow*np.dot(D,np.ones(2))}
+
             
-            
-            
-        
-        
         if time >= 14*2:
+
             if self.prices["sale"][time-1] >= self.prices["purchase"][0]:
+
                 load_battery = {"fast" : -self.pmax_fast*np.ones(2),"slow" : -self.pmax_slow*np.ones(2)}
                 
                 
