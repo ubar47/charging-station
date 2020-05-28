@@ -71,43 +71,23 @@ class Player:
         #Exemple : simple politics
 
         load_battery = {"fast" : np.zeros(2),"slow" : np.zeros(2)}
-
-        load_battery = {"fast" : np.zeros(2),"slow" : np.zeros(2)}
-        
-        
+       
         C=np.eye(2) #Matrice diagonale qui prendra 0 si les voitures fast ont une batterie trop juste pour vendre, 1 sinon.
         D=np.eye(2) #Idem pour les slow
-        
-
-        if self.grid_relative_load[time-1] > 0:
-            C[0][0]=1
-            C[0][1]=1
-            D[0][0]=1
-            D[0][1]=1
-            load_battery = {"fast" : -(self.pmax_station/3)*np.dot(C,np.ones(2)),"slow" : -self.pmax_slow*np.dot(D,np.ones(2))}
-        else:
-            C[0][0]=1
-            C[0][1]=1
-            D[0][0]=1
-            D[0][1]=1
-            load_battery = {"fast" : (self.pmax_station/3)*np.dot(C,np.ones(2)),"slow" : self.pmax_slow*np.dot(D,np.ones(2))}
-            
-        
-        
-        
-        if 3<time < 23:
-            if self.battery_stock["fast"][0][0]<11:
+        if self.grid_relative_load[time-1] > 0 :
+            load_battery = {"fast" : (-self.pmax_station)*np.dot(C,np.ones(2)),"slow" : -self.pmax_slow*np.dot(D,np.ones(2))}
+        #Sécurité : on charge si jamais on est pas dans les clous
+        if time >= 44 or time <= 6:
+            if self.battery_stock["fast"][time][0]<14:
                 C[0][0]=1
-            if self.battery_stock["fast"][0][1]<11:
-                C[0][1]=1
-            if self.battery_stock["slow"][0][0]<11:
+            if self.battery_stock["fast"][time][1]<14:
+                C[1][1]=1
+            if self.battery_stock["slow"][time][0]<14:
                 D[0][0]=1
-            if self.battery_stock["slow"][0][1]<11:
-                D[0][1]=1   
-            load_battery = {"fast" : (self.pmax_station/3)*np.dot(C,np.ones(2)),"slow" : self.pmax_slow*np.dot(D,np.ones(2))}
+            if self.battery_stock["slow"][time][1]<14:
+                D[1][1]=1   
+            load_battery = {"fast" : (self.pmax_fast/5)*np.dot(C,np.ones(2)),"slow" : self.pmax_slow*np.dot(D,np.ones(2))}
             
-        
-
         
 
         # TO BE COMPLETED
