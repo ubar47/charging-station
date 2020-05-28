@@ -74,10 +74,15 @@ class Player:
        
         C=np.eye(2) #Matrice diagonale qui prendra 0 si les voitures fast ont une batterie trop juste pour vendre, 1 sinon.
         D=np.eye(2) #Idem pour les slow
-        if self.grid_relative_load[time-1] > 0 :
+        if self.grid_relative_load[time-1] > -100 and time > 20:
             load_battery = {"fast" : (-self.pmax_station)*np.dot(C,np.ones(2)),"slow" : -self.pmax_slow*np.dot(D,np.ones(2))}
+        
+        C[0][0]=0
+        C[1][1]=0
+        D[0][0]=0
+        D[1][1]=0
         #Sécurité : on charge si jamais on est pas dans les clous
-        if time >= 44 or time <= 6:
+        if time >= 44 or time <= 10:
             if self.battery_stock["fast"][time][0]<14:
                 C[0][0]=1
             if self.battery_stock["fast"][time][1]<14:
@@ -89,7 +94,10 @@ class Player:
             load_battery = {"fast" : (self.pmax_fast/5)*np.dot(C,np.ones(2)),"slow" : self.pmax_slow*np.dot(D,np.ones(2))}
             
         
-
+        
+        
+        
+        
         # TO BE COMPLETED
 
         # Be carefull if the sum in load_battery is over pmax_station = 40 then the cars wont be charged as you want.
